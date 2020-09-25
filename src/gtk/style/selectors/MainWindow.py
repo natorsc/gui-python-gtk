@@ -1,15 +1,32 @@
 # -*- coding: utf-8 -*-
 """Principais seletores css do GTK."""
+
+import sys
+
 import gi
 
 gi.require_version(namespace='Gtk', version='3.0')
-from gi.repository import Gtk, Gdk
+from gi.repository import Gio, Gtk, Gdk
+
+
+def load_custom_css(file):
+    css_provider = Gtk.CssProvider.new()
+    css_provider.load_from_path(path=file)
+
+    screen = Gdk.Screen()
+
+    style_context = Gtk.StyleContext.new()
+    style_context.add_provider_for_screen(
+        screen=screen.get_default(),
+        provider=css_provider,
+        priority=Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+    )
 
 
 class MainWindow(Gtk.ApplicationWindow):
-    def __init__(self):
-        super().__init__()
-        self._set_custom_css(file='custom.css')
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.set_title(title='Principais seletores css do GTK')
         self.set_default_size(width=1366 / 2, height=768 / 2)
@@ -27,32 +44,40 @@ class MainWindow(Gtk.ApplicationWindow):
         vbox.pack_start(child=self.label, expand=True, fill=True, padding=0)
 
         button = Gtk.Button.new_with_label(label='Clique Aqui')
-        button.connect('clicked', self._on_button_clicked)
+        button.connect('clicked', self.on_button_clicked)
         vbox.pack_end(child=button, expand=False, fill=True, padding=0)
 
-    @staticmethod
-    def _set_custom_css(file):
-        css_provider = Gtk.CssProvider.new()
-        css_provider.load_from_path(path=file)
+        self.show_all()
 
-        screen = Gdk.Screen()
-
-        style_context = Gtk.StyleContext.new()
-        style_context.add_provider_for_screen(
-            screen=screen.get_default(),
-            provider=css_provider,
-            priority=Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
-        )
-
-    def _on_button_clicked(self, button):
+    def on_button_clicked(self, button):
         if self.entry.get_text():
             self.label.set_label(str=self.entry.get_text())
         else:
             self.label.set_label(str='Digite algo no campo acima!')
 
 
+class Application(Gtk.Application):
+
+    def __init__(self):
+        super().__init__(application_id='br.natorsc.Exemplo',
+                         flags=Gio.ApplicationFlags.FLAGS_NONE)
+
+    def do_startup(self):
+        Gtk.Application.do_startup(self)
+
+        # Carregando e aplicando o arquivo de css personalizado.
+        load_custom_css(file='../../../data/css/custom.css')
+
+    def do_activate(self):
+        win = self.props.active_window
+        if not win:
+            win = MainWindow(application=self)
+        win.present()
+
+    def do_shutdown(self):
+        Gtk.Application.do_shutdown(self)
+
+
 if __name__ == '__main__':
-    win = MainWindow()
-    win.connect('destroy', Gtk.main_quit)
-    win.show_all()
-    Gtk.main()
+    app = Application()
+    app.run(sys.argv)

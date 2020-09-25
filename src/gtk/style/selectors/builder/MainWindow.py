@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Alterando o estilo do widget através da propriedade name.
-
-- 2 labels com a propriedade `name=label-bg-red`.
-- 2 sem a propriedade name.
-"""
+"""Principais seletores css do GTK."""
 
 import sys
 
@@ -27,29 +23,31 @@ def load_custom_css(file):
     )
 
 
+@Gtk.Template(filename='MainWindow.ui')
 class MainWindow(Gtk.ApplicationWindow):
+    __gtype_name__ = 'MainWindow'
+
+    entry = Gtk.Template.Child(name='entry')
+    label = Gtk.Template.Child(name='label')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.set_title(title='Lendo o arquivo css e o estilo sendo aplicado')
-        self.set_default_size(width=1366 / 2, height=768 / 2)
-        self.set_position(position=Gtk.WindowPosition.CENTER)
+    @Gtk.Template.Callback()
+    def _on_button_clicked(self, button):
+        """Método é chamado quando o botão da interface é pressionado.
 
-        vbox = Gtk.Box.new(orientation=Gtk.Orientation.VERTICAL, spacing=12)
-        vbox.set_border_width(border_width=12)
-        self.add(widget=vbox)
+        Caso haja algum texto/caractere no campo de entrada de texto o
+        texto será exibido no label da interface, caso não haja
+        é exibida outra mensagem.
 
-        for i in range(1, 3):
-            label = Gtk.Label.new(str=f'Label {i} COM propriedade name')
-            label.set_name(name='label-bg-red')
-            vbox.pack_start(child=label, expand=True, fill=True, padding=0)
-
-        for i in range(1, 3):
-            label = Gtk.Label.new(str=f'Label {i} SEM propriedade name')
-            vbox.pack_start(child=label, expand=True, fill=True, padding=0)
-
-        self.show_all()
+        :param button: Instância do objeto ``Gtk.Button()``. Basicamente
+        informações do botão que foi pressionado.
+        """
+        if self.entry.get_text():
+            self.label.set_label(str=self.entry.get_text())
+        else:
+            self.label.set_label(str='Digite algo no campo acima!')
 
 
 class Application(Gtk.Application):
@@ -62,7 +60,7 @@ class Application(Gtk.Application):
         Gtk.Application.do_startup(self)
 
         # Carregando e aplicando o arquivo de css personalizado.
-        load_custom_css(file='../../../data/css/name-label-bg-red.css')
+        load_custom_css(file='../../../../data/css/custom.css')
 
     def do_activate(self):
         win = self.props.active_window

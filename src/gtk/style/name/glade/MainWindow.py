@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Alterando o estilo do widget através da propriedade class.
+"""Alterando o estilo do widget através da propriedade name.
 
-- 2 labels com a propriedade `class=label-bg-red`.
-- 2 sem a propriedade class.
+- 2 labels com a propriedade `name=label-bg-red`.
+- 2 sem a propriedade name.
 """
 
 import gi
@@ -29,7 +29,7 @@ class Handler:
 
     def __init__(self):
         # Carregando e aplicando o arquivo de css personalizado.
-        load_custom_css(file='../../../../data/css/class-label-bg-red.css')
+        load_custom_css(file='../../../../data/css/name-label-bg-red.css')
 
 
 if __name__ == '__main__':

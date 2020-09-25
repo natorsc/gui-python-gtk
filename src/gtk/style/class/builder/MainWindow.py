@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Lendo e aplicando estilo através de um arquivo css personalizado."""
+"""Alterando o estilo do widget através da propriedade class.
+
+- 2 labels com a propriedade `class=label-bg-red`.
+- 2 sem a propriedade class.
+"""
 
 import sys
 
